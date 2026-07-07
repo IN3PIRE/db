@@ -33,13 +33,18 @@ db branch delete feat/awesome-feature
 
 ## Installation
 
+### From GitHub Packages
+
+> **Prerequisite:** A GitHub [Personal Access Token](https://github.com/settings/tokens) with `read:packages` scope.
+
 ```bash
+# Authenticate with GitHub Packages
+echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+
+# Install globally
 npm install -g @in3pire/db
-```
 
-Or run directly:
-
-```bash
+# Or run directly without installing
 npx @in3pire/db --help
 ```
 

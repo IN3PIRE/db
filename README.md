@@ -33,19 +33,31 @@ db branch delete feat/awesome-feature
 
 ## Installation
 
-### From GitHub Packages
+> **⚠️ Note:** `@in3pire/db` is published exclusively on **GitHub Packages**. The public npm registry (`npmjs.com`) is **not used**, so `npm install @in3pire/db` or `npx @in3pire/db` will **not work** without configuring GitHub Packages first.
 
-> **Prerequisite:** A GitHub [Personal Access Token](https://github.com/settings/tokens) with `read:packages` scope.
+### Prerequisites
+
+- A GitHub [Personal Access Token](https://github.com/settings/tokens) with `read:packages` scope
+- Your `~/.npmrc` must be configured to resolve the `@in3pire` scope to GitHub Packages
+
+### Setup
 
 ```bash
-# Authenticate with GitHub Packages
+# Configure npm to use GitHub Packages for the @in3pire scope
+echo "@in3pire:registry=https://npm.pkg.github.com" >> ~/.npmrc
 echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+```
 
-# Install globally
+### Install globally
+
+```bash
 npm install -g @in3pire/db
+```
 
-# Or run directly without installing
-npx @in3pire/db --help
+### Run directly (from release tarball, no install needed)
+
+```bash
+npx https://github.com/IN3PIRE/db/releases/download/v0.1.1/in3pire-db-0.1.1.tgz --help
 ```
 
 ## Quick Start

@@ -28,11 +28,14 @@ for the repository dependencies in `package-lock.json`. It is only needed when
 installing the published `@in3pire/db` package.
 
 If you do need GitHub Packages access, add the scoped registry to your npm
-configuration:
+configuration. Prefer a project-level `.npmrc` for repository work so repeated
+setup does not duplicate lines in your global npm config:
 
 ```bash
-echo "@in3pire:registry=https://npm.pkg.github.com" >> ~/.npmrc
-echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
+cat > .npmrc <<'EOF'
+@in3pire:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN
+EOF
 ```
 
 ## Environment Configuration
@@ -40,16 +43,15 @@ echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
 Commands that call Neon need credentials. You can either use the CLI auth
 commands or environment variables.
 
-```bash
-cp .env.example .env  # if an example file is added later
-```
-
 Use these variables when working locally:
 
 ```bash
 NEON_API_KEY=your-neon-api-key
 NEON_PROJECT_ID=your-neon-project-id
 ```
+
+`NEON_PROJECT_ID` can also be persisted with `npm run dev -- auth set-project
+<project-id>` if you prefer not to set it for every shell session.
 
 The CLI also stores configuration in:
 
@@ -164,7 +166,7 @@ avoid checking in real account data.
 2. Create a focused branch:
 
 ```bash
-git checkout -b docs/contributing-guide
+git checkout -b fix/short-description
 ```
 
 3. Make one logical change per pull request.
@@ -189,6 +191,7 @@ When opening an issue, include:
 - Expected behavior
 - Actual behavior
 - Node.js and npm versions
+- CLI version, for example `npx @in3pire/db --version`
 - Whether credentials were provided through config or environment variables
 - Redacted error output when relevant
 

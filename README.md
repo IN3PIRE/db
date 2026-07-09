@@ -4,6 +4,8 @@
 
 **Database branch CLI — Git-like branching for Neon Postgres.**
 
+[Changelog](CHANGELOG.md)
+
 Create, diff, merge, and manage database branches from your terminal. Designed for modern development workflows where every PR, feature, or experiment gets its own isolated database.
 
 ```bash

@@ -1,34 +1,8 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
-import { NeonClient } from "../lib/neon-api.js";
-import { resolveApiKey, resolveProjectId } from "../lib/config.js";
+import { getClient, getProjectId, resolveBranch } from "../lib/client.js";
 import { renderBranchTable, renderBranchDetail } from "../lib/format.js";
-
-function getClient(): NeonClient {
-  const key = resolveApiKey();
-  if (!key) {
-    console.error(
-      chalk.red("No API key configured. Run: db auth login")
-    );
-    process.exit(1);
-  }
-  return new NeonClient(key);
-}
-
-async function getProjectId(provided?: string): Promise<string> {
-  if (provided) return provided;
-  const id = resolveProjectId();
-  if (!id) {
-    console.error(
-      chalk.red(
-        "No project ID set. Run: db auth set-project <id> or pass --project"
-      )
-    );
-    process.exit(1);
-  }
-  return id;
-}
 
 export function registerBranchCmd(program: Command) {
   const branch = program
@@ -74,6 +48,16 @@ export function registerBranchCmd(program: Command) {
     .option("-f, --from <branch>", "Parent branch name or ID")
     .option("--latest", "Create from latest snapshot")
     .action(async (name, options) => {
+      // Issue #15: validate branch name
+      if (!/^[a-zA-Z0-9][a-zA-Z0-9_.-]*$/.test(name)) {
+        console.error(
+          chalk.red(
+            "Invalid branch name. Must start with a letter or number and contain only letters, numbers, hyphens, underscores, and dots."
+          )
+        );
+        process.exit(1);
+      }
+
       const spinner = ora("Creating branch…").start();
       try {
         const client = getClient();
@@ -83,15 +67,7 @@ export function registerBranchCmd(program: Command) {
 
         // Resolve parent branch
         if (options.from) {
-          const res = await client.listBranches(projectId);
-          const parent = res.branches?.find(
-            (b) =>
-              b.name === options.from || b.id.startsWith(options.from)
-          );
-          if (!parent) {
-            spinner.fail(`Parent branch "${options.from}" not found`);
-            process.exit(1);
-          }
+          const parent = await resolveBranch(client, projectId, options.from);
           parentId = parent.id;
         }
 
@@ -129,16 +105,7 @@ export function registerBranchCmd(program: Command) {
         const client = getClient();
         const projectId = await getProjectId(options.project);
 
-        // Resolve branch
-        const res = await client.listBranches(projectId);
-        const branch = res.branches?.find(
-          (b) => b.name === identifier || b.id.startsWith(identifier)
-        );
-
-        if (!branch) {
-          console.error(chalk.red(`Branch "${identifier}" not found`));
-          process.exit(1);
-        }
+        const branch = await resolveBranch(client, projectId, identifier);
 
         if (!options.force) {
           const readline = (await import("node:readline")).default;
@@ -184,14 +151,7 @@ export function registerBranchCmd(program: Command) {
         const client = getClient();
         const projectId = await getProjectId(options.project);
 
-        const res = await client.listBranches(projectId);
-        const branch = res.branches?.find(
-          (b) => b.name === oldName || b.id.startsWith(oldName)
-        );
-        if (!branch) {
-          spinner.fail(`Branch "${oldName}" not found`);
-          process.exit(1);
-        }
+        const branch = await resolveBranch(client, projectId, oldName);
 
         await client.updateBranch(projectId, branch.id, { name: newName });
         spinner.stop();
@@ -217,14 +177,7 @@ export function registerBranchCmd(program: Command) {
         const client = getClient();
         const projectId = await getProjectId(options.project);
 
-        const res = await client.listBranches(projectId);
-        const branch = res.branches?.find(
-          (b) => b.name === identifier || b.id.startsWith(identifier)
-        );
-        if (!branch) {
-          spinner.fail(`Branch "${identifier}" not found`);
-          process.exit(1);
-        }
+        const branch = await resolveBranch(client, projectId, identifier);
 
         spinner.stop();
         console.log(renderBranchDetail(branch));
@@ -249,27 +202,15 @@ export function registerBranchCmd(program: Command) {
         const client = getClient();
         const projectId = await getProjectId(options.project);
 
-        const res = await client.listBranches(projectId);
-        const bA = res.branches?.find(
-          (b) => b.name === branchA || b.id.startsWith(branchA)
-        );
-        if (!bA) {
-          spinner.fail(`Branch "${branchA}" not found`);
-          process.exit(1);
-        }
+        const bA = await resolveBranch(client, projectId, branchA);
 
         // If no second branch specified, find parent by parent_lsn
         let bBId: string;
         if (branchB) {
-          const bB = res.branches?.find(
-            (b) => b.name === branchB || b.id.startsWith(branchB)
-          );
-          if (!bB) {
-            spinner.fail(`Branch "${branchB}" not found`);
-            process.exit(1);
-          }
+          const bB = await resolveBranch(client, projectId, branchB);
           bBId = bB.id;
         } else {
+          const res = await client.listBranches(projectId);
           // Default to main
           const main = res.branches?.find((b) => b.name === "main");
           if (main) {

@@ -15,6 +15,7 @@ export function registerBranchCmd(program: Command) {
     .command("list")
     .description("List all branches in a project")
     .option("-p, --project <id>", "Project ID")
+    .option("--json", "Output in JSON format (no spinner)")
     .action(async (options) => {
       const spinner = ora("Fetching branches…").start();
       try {
@@ -22,6 +23,26 @@ export function registerBranchCmd(program: Command) {
         const projectId = await getProjectId(options.project);
         const res = await client.listBranches(projectId);
         spinner.stop();
+
+        if (options.json) {
+          const out = {
+            branches: res.branches.map((b: any) => ({
+              id: b.id,
+              name: b.name,
+              project_id: b.project_id,
+              parent_id: b.parent_id ?? null,
+              branch_type: b.branch_type ?? "branch",
+              state: b.state ?? "active",
+              logical_size: b.logical_size ?? null,
+              cpu_seconds_used: b.cpu_seconds_used ?? 0,
+              created_at: b.created_at,
+              updated_at: b.updated_at,
+            })),
+            total: res.branches.length,
+          };
+          console.log(JSON.stringify(out, null, 2));
+          return;
+        }
 
         if (!res.branches || res.branches.length === 0) {
           console.log(chalk.dim("No branches found."));

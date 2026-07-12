@@ -1,29 +1,7 @@
 import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
-import { NeonClient } from "../lib/neon-api.js";
-import { resolveApiKey, resolveProjectId } from "../lib/config.js";
-
-function getClient(): NeonClient {
-  const key = resolveApiKey();
-  if (!key) {
-    console.error(chalk.red("No API key configured. Run: db auth login"));
-    process.exit(1);
-  }
-  return new NeonClient(key);
-}
-
-async function getProjectId(provided?: string): Promise<string> {
-  if (provided) return provided;
-  const id = resolveProjectId();
-  if (!id) {
-    console.error(
-      chalk.red("No project ID set. Run: db auth set-project <id> or pass --project")
-    );
-    process.exit(1);
-  }
-  return id;
-}
+import { getClient, getProjectId, resolveBranch } from "../lib/client.js";
 
 export function registerCiCmd(program: Command) {
   const ci = program.command("ci").description("CI/CD integration commands");
@@ -44,11 +22,8 @@ export function registerCiCmd(program: Command) {
         // Resolve parent
         let parentId: string | undefined;
         if (options.from) {
-          const branchesRes = await client.listBranches(projectId);
-          const parent = branchesRes.branches?.find(
-            (b) => b.name === options.from
-          );
-          if (parent) parentId = parent.id;
+          const parent = await resolveBranch(client, projectId, options.from);
+          parentId = parent.id;
         }
 
         const res = await client.createBranch(

@@ -72,14 +72,56 @@ export type NeonBranch = NonNullable<
   NonNullable<z.infer<typeof NeonApiResponse>["branches"]>[0]
 >;
 
+/** Maps an HTTP status code to a user-friendly guidance message. */
+function statusHint(status: number): string {
+  switch (status) {
+    case 401:
+      return (
+        "Your API key is invalid or expired. Run `db auth` to set a new one, " +
+        "or check your NEON_API_KEY environment variable."
+      );
+    case 403:
+      return (
+        "You don't have permission for this resource. " +
+        "Check that your API key has the correct project access in the Neon Console."
+      );
+    case 404:
+      return (
+        "The resource was not found. " +
+        "Verify your project ID and branch ID are correct."
+      );
+    case 409:
+      return (
+        "Conflict — the resource already exists or the operation conflicts with " +
+        "the current state. Try a different name or check the branch state."
+      );
+    case 429:
+      return (
+        "Rate limit exceeded. Wait a moment and try again, " +
+        "or check your usage at https://console.neon.tech."
+      );
+    default:
+      if (status >= 500) {
+        return (
+          "Neon server error. This is usually temporary — try again in a few seconds. " +
+          "Check https://status.neon.tech for ongoing incidents."
+        );
+      }
+      return "An unexpected error occurred. Please try again.";
+  }
+}
+
 export class NeonApiError extends Error {
   status: number;
   body: string;
+  userMessage: string;
 
   constructor(status: number, body: string) {
-    super(`Neon API returned ${status}: ${body}`);
+    const detail = body ? ` — ${body}` : "";
+    super(`Neon API returned ${status}${detail}`);
     this.status = status;
     this.body = body;
+    this.userMessage = statusHint(status);
   }
 }
 

@@ -129,6 +129,9 @@ export function registerCiCmd(program: Command) {
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+  schedule:
+    # Weekly cleanup of orphaned preview branches (Sunday at 3am)
+    - cron: "0 3 * * 0"
 
 jobs:
   preview:
@@ -144,13 +147,28 @@ jobs:
             --from main
         env:
           NEON_API_KEY: \${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: \${{ secrets.NEON_PROJECT_ID }}
 
       - name: Teardown preview branch
         if: github.event.action == 'closed'
         run: |
-          npx @in3pire/db branch delete pr-\${{ github.event.number }} --force
+          npx @in3pire/db branch delete pr-\${{ github.event.number }} --force \\
+            --project \${{ secrets.NEON_PROJECT_ID }}
         env:
           NEON_API_KEY: \${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: \${{ secrets.NEON_PROJECT_ID }}
+
+  cleanup:
+    if: github.event_name == 'schedule'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Clean stale preview branches
+        run: |
+          npx @in3pire/db ci cleanup --days 14 --project \${{ secrets.NEON_PROJECT_ID }}
+        env:
+          NEON_API_KEY: \${{ secrets.NEON_API_KEY }}
+          NEON_PROJECT_ID: \${{ secrets.NEON_PROJECT_ID }}
 `;
 
       console.log(

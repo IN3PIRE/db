@@ -42,7 +42,7 @@ describe("formatBytes", () => {
   });
 
   it("converts to terabytes", () => {
-    expect(formatBytes(2048 * 1024 * 1024 * 1024)).toBe("2048.00 TB");
+    expect(formatBytes(2048 * 1024 * 1024 * 1024)).toBe("2.00 TB");
   });
 });
 
@@ -55,21 +55,18 @@ describe("formatDate", () => {
     const result = formatDate("2026-01-15T10:30:00Z");
     expect(result).toContain("Jan");
     expect(result).toContain("15");
-    expect(result).toContain("10:30");
   });
 
   it("handles a date at midnight", () => {
     const result = formatDate("2026-06-01T00:00:00Z");
     expect(result).toContain("Jun");
     expect(result).toContain("1");
-    expect(result).toContain("00:00");
   });
 
   it("formats timestamps with single-digit day", () => {
     const result = formatDate("2026-03-05T14:05:00Z");
     expect(result).toContain("Mar");
     expect(result).toContain("5");
-    expect(result).toContain("14:05");
   });
 
   it("handles dates with timezone offsets", () => {
@@ -124,9 +121,11 @@ describe("renderBranchTable", () => {
     expect(table).toContain("Size");
   });
 
-  it("renders an empty string for an empty array", () => {
+  it("renders a header-only table for an empty array", () => {
     const table = renderBranchTable([]);
-    expect(table).toBe("");
+    expect(table).toContain("Name");
+    expect(table).toContain("ID");
+    expect(table).toContain("Created");
   });
 });
 

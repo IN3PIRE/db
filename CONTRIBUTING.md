@@ -4,6 +4,8 @@ Thanks for taking the time to contribute. This project is a TypeScript CLI for
 working with Neon Postgres database branches, so most changes should stay small,
 focused, and easy to verify from the command line.
 
+> **Please support us by starring the repo — it increases development speed for us!** ⭐
+
 ## Prerequisites
 
 - Node.js 18 or newer

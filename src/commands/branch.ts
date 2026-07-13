@@ -2,7 +2,8 @@ import { Command } from "commander";
 import chalk from "chalk";
 import ora from "ora";
 import { getClient, getProjectId, resolveBranch } from "../lib/client.js";
-import { renderBranchTable, renderBranchDetail } from "../lib/format.js";
+import { renderBranchTable, renderBranchDetail, renderDiff } from "../lib/format.js";
+import { computeSchemaDiff } from "../lib/schema-diff.js";
 
 export function registerBranchCmd(program: Command) {
   const branch = program
@@ -217,6 +218,7 @@ export function registerBranchCmd(program: Command) {
     .argument("<branch-a>", "First branch name or ID")
     .argument("[branch-b]", "Second branch name or ID (default: parent)")
     .option("-p, --project <id>", "Project ID")
+    .option("--schema <schema>", "Database schema to compare (default: public)")
     .action(async (branchA, branchB, options) => {
       const spinner = ora("Computing diff…").start();
       try {
@@ -225,45 +227,34 @@ export function registerBranchCmd(program: Command) {
 
         const bA = await resolveBranch(client, projectId, branchA);
 
-        // If no second branch specified, find parent by parent_lsn
-        let bBId: string;
+        let bB: { id: string; name: string };
         if (branchB) {
-          const bB = await resolveBranch(client, projectId, branchB);
-          bBId = bB.id;
+          bB = await resolveBranch(client, projectId, branchB);
         } else {
           const res = await client.listBranches(projectId);
-          // Default to main
           const main = res.branches?.find((b) => b.name === "main");
           if (main) {
-            bBId = main.id;
+            bB = main;
           } else if (res.branches && res.branches.length > 0) {
-            bBId = res.branches[0].id;
+            bB = res.branches[0];
           } else {
             spinner.fail("No reference branch found");
             process.exit(1);
           }
         }
 
-        spinner.stop();
+        spinner.text = "Fetching connection strings…";
+        const [connA, connB] = await Promise.all([
+          client.getConnectionString(projectId, bA.id),
+          client.getConnectionString(projectId, bB.id),
+        ]);
 
-        // For now we show a placeholder — real schema diff requires
-        // connecting to both branches and running pg_dump comparison.
-        // This is the path we'd implement next.
-        console.log(
-          chalk.yellow(
-            "\n  ⚡ Schema diff requires database credentials for each branch."
-          )
-        );
-        console.log(
-          chalk.yellow(
-            "  Run `db connect` first, then use your preferred SQL diff tool."
-          )
-        );
-        console.log(
-          chalk.dim(
-            `\n  Comparing: ${bA.name} (${bA.id.substring(0, 8)}) ↔ ${branchB || "main"}\n`
-          )
-        );
+        spinner.text = "Comparing schemas…";
+        const schema = options.schema || "public";
+        const diffs = await computeSchemaDiff(connA, connB, schema);
+
+        spinner.stop();
+        console.log(renderDiff(bA.name, bB.name, diffs));
       } catch (err) {
         spinner.fail("Failed to compute diff");
         console.error(chalk.red(`  ${(err as Error).message}`));

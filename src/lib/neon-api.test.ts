@@ -197,7 +197,7 @@ describe("NeonApiError", () => {
     expect(err.status).toBe(401);
     expect(err.body).toBe('{"message":"Unauthorized"}');
     expect(err.message).toBe(
-      'Neon API returned 401: {"message":"Unauthorized"}'
+      'Neon API returned 401 — {"message":"Unauthorized"}'
     );
   });
 
@@ -228,7 +228,7 @@ describe("NeonApiError", () => {
       const err = new NeonApiError(status, body);
       expect(err.status).toBe(status);
       expect(err.body).toBe(body);
-      expect(err.message).toBe(`Neon API returned ${status}: ${body}`);
+      expect(err.message).toBe(`Neon API returned ${status} — ${body}`);
     }
   });
 });

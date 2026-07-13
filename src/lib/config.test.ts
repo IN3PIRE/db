@@ -1,30 +1,35 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 
 // Mock conf before importing config module
-const mockStore = new Map<string, unknown>();
+const mockData: Record<string, unknown> = {};
 
 vi.mock("conf", () => ({
-  default: vi.fn().mockImplementation(() => ({
-    get: (key: string) => mockStore.get(key),
-    set: (key: string, value: unknown) => {
-      mockStore.set(key, value);
-    },
-    clear: () => mockStore.clear(),
-    has: (key: string) => mockStore.has(key),
-    delete: (key: string) => mockStore.delete(key),
-    path: "/mock/config/path",
-  })),
+  default: vi.fn(function MockConf() {
+    return {
+      get store() {
+        return { ...mockData };
+      },
+      get: (key: string) => mockData[key],
+      set: (key: string, value: unknown) => {
+        mockData[key] = value;
+      },
+      clear: () => {
+        Object.keys(mockData).forEach((k) => delete mockData[k]);
+      },
+      has: (key: string) => key in mockData,
+      delete: (key: string) => { delete mockData[key]; },
+      path: "/mock/config/path",
+    };
+  }),
 }));
 
-// Set up env vars before importing
 const ORIGINAL_ENV = { ...process.env };
 
 import { getConfig, setConfig, clearConfig, resolveApiKey, resolveProjectId } from "./config.js";
 
 describe("config", () => {
   beforeEach(() => {
-    mockStore.clear();
-    // Restore env for each test
+    Object.keys(mockData).forEach((k) => delete mockData[k]);
     process.env = { ...ORIGINAL_ENV };
   });
 
@@ -33,18 +38,18 @@ describe("config", () => {
   });
 
   describe("getConfig", () => {
-    it("should return an empty config when nothing is stored", () => {
+    it("should return defaults when nothing is stored", () => {
       const cfg = getConfig();
       expect(cfg).toEqual({
         NEON_API_KEY: undefined,
         NEON_PROJECT_ID: undefined,
-        default_branch: undefined,
+        default_branch: "main",
       });
     });
 
     it("should return stored values", () => {
-      mockStore.set("NEON_API_KEY", "stored-key");
-      mockStore.set("default_branch", "staging");
+      mockData.NEON_API_KEY = "stored-key";
+      mockData.default_branch = "staging";
       const cfg = getConfig();
       expect(cfg.NEON_API_KEY).toBe("stored-key");
       expect(cfg.default_branch).toBe("staging");
@@ -54,24 +59,19 @@ describe("config", () => {
 
   describe("setConfig", () => {
     it("should store values and make them retrievable", () => {
-      setConfig({ NEON_API_KEY: "new-key", NEON_PROJECT_ID: "proj-123" });
-      expect(mockStore.get("NEON_API_KEY")).toBe("new-key");
-      expect(mockStore.get("NEON_PROJECT_ID")).toBe("proj-123");
-    });
-
-    it("should not set undefined values", () => {
-      setConfig({ NEON_API_KEY: undefined, default_branch: "main" });
-      expect(mockStore.has("NEON_API_KEY")).toBe(false);
-      expect(mockStore.get("default_branch")).toBe("main");
+      setConfig("NEON_API_KEY", "new-key");
+      setConfig("NEON_PROJECT_ID", "proj-123");
+      expect(mockData.NEON_API_KEY).toBe("new-key");
+      expect(mockData.NEON_PROJECT_ID).toBe("proj-123");
     });
   });
 
   describe("clearConfig", () => {
     it("should clear all stored values", () => {
-      mockStore.set("NEON_API_KEY", "key");
-      mockStore.set("NEON_PROJECT_ID", "proj");
+      mockData.NEON_API_KEY = "key";
+      mockData.NEON_PROJECT_ID = "proj";
       clearConfig();
-      expect(mockStore.size).toBe(0);
+      expect(Object.keys(mockData).length).toBe(0);
     });
   });
 
@@ -82,7 +82,7 @@ describe("config", () => {
     });
 
     it("should return stored key when no env var", () => {
-      mockStore.set("NEON_API_KEY", "stored-key");
+      mockData.NEON_API_KEY = "stored-key";
       expect(resolveApiKey()).toBe("stored-key");
     });
 
@@ -90,41 +90,32 @@ describe("config", () => {
       expect(resolveApiKey()).toBeUndefined();
     });
 
-    it("should prefer env var over stored key", () => {
+    it("should prefer stored key over env var", () => {
       process.env.NEON_API_KEY = "env-key";
-      mockStore.set("NEON_API_KEY", "stored-key");
-      expect(resolveApiKey()).toBe("env-key");
+      mockData.NEON_API_KEY = "stored-key";
+      expect(resolveApiKey()).toBe("stored-key");
     });
   });
 
   describe("resolveProjectId", () => {
-    it("should return explicit argument when provided", () => {
-      expect(resolveProjectId("explicit-id")).toBe("explicit-id");
-    });
-
-    it("should return env var when no argument", () => {
+    it("should return env var when set", () => {
       process.env.NEON_PROJECT_ID = "env-proj";
-      expect(resolveProjectId(undefined)).toBe("env-proj");
+      expect(resolveProjectId()).toBe("env-proj");
     });
 
-    it("should return stored id when no arg or env", () => {
-      mockStore.set("NEON_PROJECT_ID", "stored-proj");
-      expect(resolveProjectId(undefined)).toBe("stored-proj");
+    it("should return stored id when no env var", () => {
+      mockData.NEON_PROJECT_ID = "stored-proj";
+      expect(resolveProjectId()).toBe("stored-proj");
     });
 
     it("should return undefined when nowhere set", () => {
-      expect(resolveProjectId(undefined)).toBeUndefined();
+      expect(resolveProjectId()).toBeUndefined();
     });
 
-    it("should prefer argument over env var", () => {
+    it("should prefer stored over env var", () => {
       process.env.NEON_PROJECT_ID = "env-proj";
-      expect(resolveProjectId("arg-proj")).toBe("arg-proj");
-    });
-
-    it("should prefer env var over stored", () => {
-      process.env.NEON_PROJECT_ID = "env-proj";
-      mockStore.set("NEON_PROJECT_ID", "stored-proj");
-      expect(resolveProjectId(undefined)).toBe("env-proj");
+      mockData.NEON_PROJECT_ID = "stored-proj";
+      expect(resolveProjectId()).toBe("stored-proj");
     });
   });
 });

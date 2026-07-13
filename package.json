@@ -1,6 +1,6 @@
 {
   "name": "@in3pire/db",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Database branch CLI — Git-like branching for Neon Postgres. Create, diff, merge, and manage database branches from your terminal.",
   "type": "module",
   "bin": {

@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2026-07-13
+### Added
+- Added v0.1.2 changelog entry to CHANGELOG.md
+
 ## [0.1.2] - 2026-07-12
 ### Added
 - Added CHANGELOG.md to track project releases and version history
@@ -49,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `db auth status` — show current auth status
 - Persistent configuration via `conf`, stored at `~/.config/in3pire-db/config.json` and validated with Zod (`NEON_API_KEY`, `NEON_PROJECT_ID`, `default_branch`), with `.env` support via `dotenv`
 
-[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.1.2...main
+[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.1.3...main
+[0.1.3]: https://github.com/IN3PIRE/db/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/IN3PIRE/db/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/IN3PIRE/db/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/IN3PIRE/db/releases/tag/v0.1.0

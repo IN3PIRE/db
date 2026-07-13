@@ -1,12 +1,15 @@
 # @in3pire/db
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
+[![GitHub Repo stars](https://img.shields.io/github/stars/IN3PIRE/db?style=flat-square)](https://github.com/IN3PIRE/db)
 
 **Database branch CLI — Git-like branching for Neon Postgres.**
 
 [Changelog](CHANGELOG.md)
 
 Create, diff, merge, and manage database branches from your terminal. Designed for modern development workflows where every PR, feature, or experiment gets its own isolated database.
+
+> **Please support us by starring the repo — it increases development speed for us!** ⭐
 
 ```bash
 # Authenticate

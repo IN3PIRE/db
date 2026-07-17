@@ -13,6 +13,7 @@ export function registerPruneCmd(program: Command) {
     .option("--except <names...>", "Branch names to exclude from pruning")
     .option("--dry-run", "Show what would be deleted without deleting")
     .option("-f, --force", "Skip confirmation")
+    .option("-y, --yes", "Skip confirmation (alias for --force)")
     .action(async (options) => {
       try {
         const client = getClient();
@@ -28,7 +29,6 @@ export function registerPruneCmd(program: Command) {
 
         const candidates = branches.filter((b) => {
           if (b.name === "main" || b.name === "production") return false;
-          if (b.default) return false;
           if (b.default) return false;
           if (except.includes(b.name)) return false;
           if (b.parent_lsn === null) return false;
@@ -53,7 +53,7 @@ export function registerPruneCmd(program: Command) {
           return;
         }
 
-        if (!options.force) {
+        if (!(options.force || options.yes)) {
           const readline = (await import("node:readline")).default;
           const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
           const answer = await new Promise<string>((resolve) =>

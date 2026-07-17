@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-07-17
+### Added
+- **`db doctor`** — Diagnostic command to validate config, API key, project ID, and API connectivity with a single report.
+- **`db branch search <pattern>`** — Search/filter branches by name pattern with case-insensitive matching. Supports `--json` and `--tags` flags.
+- **`db endpoint`** — Manage Neon compute endpoints with `list`, `create`, `delete`, and `inspect` subcommands.
+- **`db role list <branch>`** — List all database roles in a branch with password masking and protection status.
+- **`-y, --yes`** — Non-interactive mode flag added to `prune`, `reset`, `branch delete`, and `endpoint delete` commands for scripting/automation (alias for `--force`).
+
 ## [0.3.0] - 2026-07-15
 ### Added
 - **`db branch schema`** — View full branch schema: tables, columns, types, nullability, defaults, and indexes. Supports `--json` and `--schema` flags.
@@ -100,7 +108,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `db auth status` — show current auth status
 - Persistent configuration via `conf`, stored at `~/.config/in3pire-db/config.json` and validated with Zod (`NEON_API_KEY`, `NEON_PROJECT_ID`, `default_branch`), with `.env` support via `dotenv`
 
-[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.3.0...main
+[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.4.0...main
+[0.4.0]: https://github.com/IN3PIRE/db/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/IN3PIRE/db/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/IN3PIRE/db/compare/v0.1.4...v0.2.0
 [0.1.4]: https://github.com/IN3PIRE/db/compare/v0.1.3...v0.1.4

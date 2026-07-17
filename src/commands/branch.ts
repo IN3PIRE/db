@@ -144,6 +144,7 @@ export function registerBranchCmd(program: Command) {
     .argument("<name-or-id>", "Branch name or ID")
     .option("-p, --project <id>", "Project ID")
     .option("-f, --force", "Skip confirmation")
+    .option("-y, --yes", "Skip confirmation (alias for --force)")
     .action(async (identifier, options) => {
       try {
         const client = getClient();
@@ -156,7 +157,7 @@ export function registerBranchCmd(program: Command) {
           process.exit(1);
         }
 
-        if (!options.force) {
+        if (!(options.force || options.yes)) {
           const readline = (await import("node:readline")).default;
           const rl = readline.createInterface({
             input: process.stdin,
@@ -676,6 +677,72 @@ export function registerBranchCmd(program: Command) {
         });
       } catch (err) {
         spinner.fail("Merge failed");
+        console.error(chalk.red(`  ${(err as Error).message}`));
+        process.exit(1);
+      }
+    });
+
+  // -- search ----------------------------------------------------------------
+  branch
+    .command("search")
+    .description("Search branches by name pattern")
+    .argument("<pattern>", "Branch name pattern (case-insensitive substring match)")
+    .option("-p, --project <id>", "Project ID")
+    .option("--json", "Output in JSON format")
+    .option("--tags", "Show local tags alongside branches")
+    .action(async (pattern, options) => {
+      const spinner = ora("Searching branches…").start();
+      try {
+        const client = getClient();
+        const projectId = await getProjectId(options.project);
+        const res = await client.listBranches(projectId);
+        const branches = res.branches ?? [];
+        spinner.stop();
+
+        const re = new RegExp(pattern.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"), "i");
+        const matches = branches.filter((b) => re.test(b.name));
+
+        if (matches.length === 0) {
+          console.log(chalk.dim(`No branches matching "${pattern}".`));
+          return;
+        }
+
+        if (options.json) {
+          const out = {
+            pattern,
+            matches: matches.map((b) => ({
+              id: b.id,
+              name: b.name,
+              project_id: b.project_id,
+              parent_id: b.parent_id ?? null,
+              logical_size: b.logical_size ?? null,
+              created_at: b.created_at,
+              updated_at: b.updated_at,
+              protected: isBranchProtected(b.name),
+              tag: getTag(b.name) ?? null,
+            })),
+            total: matches.length,
+          };
+          console.log(JSON.stringify(out, null, 2));
+          return;
+        }
+
+        console.log(chalk.bold(`\n  Branches matching "${pattern}" (${matches.length}):\n`));
+        console.log(renderBranchTable(matches));
+
+        for (const b of matches) {
+          const tag = getTag(b.name);
+          const prot = isBranchProtected(b.name);
+          if (tag || prot) {
+            const parts: string[] = [];
+            if (prot) parts.push(chalk.yellow("protected"));
+            if (tag) parts.push(chalk.cyan(`tag: ${tag}`));
+            console.log(`  ${chalk.dim(b.name)}  ${parts.join("  ")}`);
+          }
+        }
+        console.log();
+      } catch (err) {
+        spinner.fail("Search failed");
         console.error(chalk.red(`  ${(err as Error).message}`));
         process.exit(1);
       }

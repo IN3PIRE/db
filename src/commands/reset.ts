@@ -12,6 +12,7 @@ export function registerResetCmd(program: Command) {
     .option("-p, --project <id>", "Project ID")
     .option("--to <branch>", "Reset to match this branch (default: main)")
     .option("-f, --force", "Skip confirmation")
+    .option("-y, --yes", "Skip confirmation (alias for --force)")
     .action(async (identifier, options) => {
       try {
         const client = getClient();
@@ -32,7 +33,7 @@ export function registerResetCmd(program: Command) {
           return;
         }
 
-        if (!options.force) {
+        if (!(options.force || options.yes)) {
           const readline = (await import("node:readline")).default;
           const rl = readline.createInterface({
             input: process.stdin,

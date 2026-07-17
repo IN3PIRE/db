@@ -16,6 +16,9 @@ import { registerCompletionCmd } from "./commands/completion.js";
 import { registerPruneCmd } from "./commands/prune.js";
 import { registerSeedCmd } from "./commands/seed.js";
 import { registerGitCmd } from "./commands/git.js";
+import { registerDoctorCmd } from "./commands/doctor.js";
+import { registerEndpointCmd } from "./commands/endpoint.js";
+import { registerRoleCmd } from "./commands/role.js";
 
 // Load .env if available
 try {
@@ -30,7 +33,7 @@ const program = new Command();
 program
   .name("db")
   .description("Database branch CLI — Git-like branching for Neon Postgres")
-  .version("0.3.0")
+  .version("0.4.0")
   .helpOption("-h, --help", "Show help")
   .addHelpText(
     "after",
@@ -82,6 +85,9 @@ registerCompletionCmd(program);
 registerPruneCmd(program);
 registerSeedCmd(program);
 registerGitCmd(program);
+registerDoctorCmd(program);
+registerEndpointCmd(program);
+registerRoleCmd(program);
 
 // Allow `db <cmd>` without subcommand prefix for common ops
 program

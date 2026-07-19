@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-20
+### Added
+- **`db update`** — New command to check for and auto-update the CLI to the latest version. Supports `--check` and `--canary` flags (#44).
+- **Canary release workflow** — Automated canary builds from the `canary` branch, published as pre-releases with `-canary.<timestamp>` versioning (#43).
+
 ## [0.5.0] - 2026-07-20
 ### Added
 - **`db branch inspect --json`** — JSON output flag for `db branch inspect` showing all branch details including protection status and tag (#39).
@@ -117,7 +122,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `db auth status` — show current auth status
 - Persistent configuration via `conf`, stored at `~/.config/in3pire-db/config.json` and validated with Zod (`NEON_API_KEY`, `NEON_PROJECT_ID`, `default_branch`), with `.env` support via `dotenv`
 
-[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.5.0...main
+[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.6.0...main
+[0.6.0]: https://github.com/IN3PIRE/db/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/IN3PIRE/db/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/IN3PIRE/db/compare/v0.3.0...v0.4.0
 [0.3.0]: https://github.com/IN3PIRE/db/compare/v0.2.0...v0.3.0

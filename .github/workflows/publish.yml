@@ -4,6 +4,9 @@ on:
   push:
     tags:
       - 'v*'
+  push:
+    branches:
+      - canary
 
 jobs:
   release:
@@ -26,13 +29,36 @@ jobs:
       - run: npm ci
       - run: npm run build
 
+      - name: Determine version
+        id: version
+        run: |
+          if [[ "${{ github.ref }}" == refs/heads/canary ]]; then
+            TIMESTAMP=$(date +%Y%m%d%H%M%S)
+            SHA=$(git rev-parse --short HEAD)
+            echo "VERSION=0.0.0-canary.$TIMESTAMP" >> $GITHUB_OUTPUT
+            echo "TAG=canary" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=true" >> $GITHUB_OUTPUT
+          else
+            VERSION=$(node -p "require('./package.json').version")
+            echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+            echo "TAG=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+            echo "PRERELEASE=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Update package version (canary)
+        if: github.ref == 'refs/heads/canary'
+        run: npm version ${{ steps.version.outputs.VERSION }} --no-git-tag-version
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v3
         with:
+          tag_name: ${{ steps.version.outputs.TAG }}
+          name: ${{ steps.version.outputs.VERSION }}
+          prerelease: ${{ steps.version.outputs.PRERELEASE }}
           generate_release_notes: true
-          make_latest: true
+          make_latest: ${{ github.ref_type == 'tag' }}
 
       - name: Publish to GitHub Packages
-        run: npm publish --access=public --ignore-scripts
+        run: npm publish --access=public --ignore-scripts --tag ${{ steps.version.outputs.PRERELEASE == 'true' && 'canary' || 'latest' }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

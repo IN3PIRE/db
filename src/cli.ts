@@ -20,6 +20,7 @@ import { registerDoctorCmd } from "./commands/doctor.js";
 import { registerEndpointCmd } from "./commands/endpoint.js";
 import { registerRoleCmd } from "./commands/role.js";
 import { registerVersionCmd } from "./commands/version.js";
+import { registerUpdateCmd } from "./commands/update.js";
 
 // Load .env if available
 try {
@@ -34,7 +35,7 @@ const program = new Command();
 program
   .name("db")
   .description("Database branch CLI — Git-like branching for Neon Postgres")
-  .version("0.5.0")
+  .version("0.6.0")
   .helpOption("-h, --help", "Show help")
   .addHelpText(
     "after",
@@ -65,6 +66,10 @@ Examples:
     db git sync                            Sync Git branches with Neon branches
     db git status                          Show Git ↔ Neon branch mapping
     db completion bash                     Generate bash completions
+    db version                             Show version information
+    db update                              Update CLI to the latest version
+    db update --check                      Check for updates without installing
+    db update --canary                     Update to the latest canary release
 
 📖 Docs: https://github.com/IN3PIRE/db
   `
@@ -90,6 +95,7 @@ registerDoctorCmd(program);
 registerEndpointCmd(program);
 registerRoleCmd(program);
 registerVersionCmd(program);
+registerUpdateCmd(program);
 
 // Allow `db <cmd>` without subcommand prefix for common ops
 program

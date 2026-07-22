@@ -13,6 +13,7 @@ export function registerConnectCmd(program: Command) {
     .argument("[branch-name]", "Branch name or ID (default: main)")
     .option("-p, --project <id>", "Project ID")
     .option("--pooled", "Use pooled connection URL")
+    .option("--json", "Output as JSON")
     .action(async (branchName, options) => {
       const spinner = ora("Resolving connection string…").start();
       try {
@@ -39,6 +40,19 @@ export function registerConnectCmd(program: Command) {
         );
 
         spinner.stop();
+
+        if (options.json) {
+          const url = new URL(connStr);
+          const out = {
+            connectionString: connStr,
+            branch: targetBranch.name,
+            pooled: !!options.pooled,
+            host: url.hostname,
+            port: url.port ? Number(url.port) : null,
+          };
+          console.log(JSON.stringify(out, null, 2));
+          return;
+        }
 
         console.log(chalk.green(`\n  ✓ ${targetBranch.name}\n`));
         console.log(`  ${connStr}\n`);

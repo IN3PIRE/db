@@ -46,7 +46,7 @@ export function registerEndpointCmd(program: Command) {
             ep.branch_id.substring(0, 8) + "…",
             ep.type === "read_write" ? chalk.green("RW") : chalk.blue("RO"),
             ep.host,
-            ep.port.toString(),
+            (ep.port ?? 5432).toString(),
           ]);
         }
 

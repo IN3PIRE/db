@@ -9,8 +9,8 @@ const BranchSchema = z.object({
   project_id: z.string(),
   parent_id: z.string().nullable().optional(),
   name: z.string(),
-  parent_lsn: z.string().nullable(),
-  parent_timestamp: z.string().nullable(),
+  parent_lsn: z.string().nullable().optional(),
+  parent_timestamp: z.string().nullable().optional(),
   created_at: z.string(),
   updated_at: z.string(),
   logical_size: z.number().optional(),
@@ -29,7 +29,7 @@ const NeonApiResponse = z.object({
       z.object({
         id: z.string(),
         host: z.string(),
-        port: z.number(),
+        port: z.number().optional(),
         type: z.enum(["read_write", "read_only"]),
         branch_id: z.string(),
       })
@@ -311,7 +311,7 @@ export class NeonClient {
     const host = pooled
       ? `${endpoint.id}.pooler.neon.tech`
       : endpoint.host;
-    const port = pooled ? 5432 : endpoint.port;
+    const port = pooled ? 5432 : endpoint.port ?? 5432;
 
     return `postgresql://${role.name}:${role.password}@${host}:${port}/${role.name}`;
   }

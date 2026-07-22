@@ -13,7 +13,8 @@ export function registerProjectCmd(program: Command) {
   project
     .command("list")
     .description("List all projects")
-    .action(async () => {
+    .option("--json", "Output in JSON format")
+    .action(async (options) => {
       const spinner = ora("Fetching projects…").start();
       try {
         const client = getClient();
@@ -21,6 +22,12 @@ export function registerProjectCmd(program: Command) {
         spinner.stop();
 
         const projects = res.projects ?? [];
+
+        if (options.json) {
+          console.log(JSON.stringify(projects, null, 2));
+          return;
+        }
+
         if (projects.length === 0) {
           console.log(chalk.dim("No projects found."));
           return;
@@ -66,6 +73,7 @@ export function registerProjectCmd(program: Command) {
     .command("inspect")
     .description("Show details about the current project")
     .option("-p, --project <id>", "Project ID")
+    .option("--json", "Output in JSON format")
     .action(async (options) => {
       const spinner = ora("Fetching project details…").start();
       try {
@@ -81,6 +89,16 @@ export function registerProjectCmd(program: Command) {
 
         const branches = branchesRes.branches ?? [];
         const endpoints = endpointsRes.endpoints ?? [];
+
+        if (options.json) {
+          const projectData = {
+            project_id: projectId,
+            branches,
+            endpoints,
+          };
+          console.log(JSON.stringify(projectData, null, 2));
+          return;
+        }
 
         console.log(chalk.bold(`\n  Project: ${projectId}\n`));
         console.log(`  ${chalk.dim("Branches:")}   ${branches.length}`);
@@ -99,3 +117,4 @@ export function registerProjectCmd(program: Command) {
       }
     });
 }
+

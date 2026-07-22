@@ -10,8 +10,15 @@ export function registerConfigCmd(program: Command) {
   cfg
     .command("list")
     .description("Show all configuration values")
-    .action(() => {
+    .option("--json", "Output as JSON")
+    .action((options) => {
       const c = getConfig();
+
+      if (options.json) {
+        console.log(JSON.stringify(c, null, 2));
+        return;
+      }
+
       console.log(chalk.bold("\n  Configuration\n"));
       console.log(`  ${chalk.dim("NEON_API_KEY:")}       ${c.NEON_API_KEY ? chalk.green("✓ set") : chalk.dim("— not set")}`);
       console.log(`  ${chalk.dim("NEON_PROJECT_ID:")}     ${c.NEON_PROJECT_ID ? chalk.green(c.NEON_PROJECT_ID) : chalk.dim("— not set")}`);

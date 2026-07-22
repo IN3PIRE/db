@@ -27,7 +27,7 @@ import { registerTimelineCmd } from "./commands/timeline.js";
 // Load .env if available
 try {
   const { config } = await import("dotenv");
-  config();
+  config({ quiet: true });
 } catch {
   // dotenv not installed or no .env — that's fine
 }

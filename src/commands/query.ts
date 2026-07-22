@@ -1,5 +1,6 @@
 import { Command } from "commander";
 import chalk from "chalk";
+import ora from "ora";
 import Table from "cli-table3";
 import { getClient, getProjectId, resolveBranch } from "../lib/client.js";
 
@@ -13,11 +14,14 @@ export function registerQueryCmd(program: Command) {
     .option("--json", "Output results as JSON")
     .option("--limit <n>", "Maximum rows to return", "100")
     .action(async (identifier, sql, options) => {
+      let spinner: ReturnType<typeof ora> | undefined;
       try {
         const client = getClient();
         const projectId = await getProjectId(options.project);
         const branch = await resolveBranch(client, projectId, identifier);
         const connStr = await client.getConnectionString(projectId, branch.id);
+
+        spinner = ora("Running query…").start();
 
         const pg = (await import("pg")).default;
         const pgClient = new pg.Client(connStr);
@@ -30,6 +34,8 @@ export function registerQueryCmd(program: Command) {
 
         const res = await pgClient.query(finalSql);
         await pgClient.end();
+
+        spinner.stop();
 
         if (options.json) {
           console.log(JSON.stringify({ rows: res.rows, rowCount: res.rowCount }, null, 2));
@@ -60,6 +66,7 @@ export function registerQueryCmd(program: Command) {
         console.log(table.toString());
         console.log(chalk.dim(`\n  ${res.rowCount} row(s) returned\n`));
       } catch (err) {
+        spinner?.stop();
         console.error(chalk.red(`  ${(err as Error).message}`));
         process.exit(1);
       }

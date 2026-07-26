@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/db-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E6%94%AF%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=1a1a2e">
-    <img alt="db — Neon Postgres Branching CLI" src="https://img.shields.io/badge/db-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E6%94%AF%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=f0f0ff">
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/db-Neon%20Branch%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=1a1a2e">
+    <img alt="db — Neon Postgres Branching CLI" src="https://img.shields.io/badge/db-Neon%20Branch%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=f0f0ff">
   </picture>
 </p>
 
@@ -49,6 +49,13 @@ db branch merge feat/payment-redesign main
 db branch delete feat/payment-redesign
 ```
 
+<br>
+
+<p align="center">
+  <b>Stop sharing databases. Stop waiting for infra. Start shipping.</b><br>
+  <a href="https://github.com/IN3PIRE/db/stargazers">⭐ Star this repo</a> if you believe in branching for databases the way Git revolutionized code.
+</p>
+
 ---
 
 ## Quick Start
@@ -92,22 +99,22 @@ db branch delete feat/awesome
 
 ## Features
 
-### 🪵 Branch Management
+### Branch Management
 Create, list, rename, delete, search, and inspect branches — just like Git.
 
-### 🔒 Safety & Organisation
-Protect critical branches, tag them for organisation, set auto-expiration, and control defaults.
+### Safety & Organization
+Protect critical branches, tag them for organization, set auto-expiration, and control defaults.
 
-### 🧬 Schema Operations
-Full schema inspection (`db branch schema`), table listing (`db branch tables`), and `git diff`-style schema diffs between any two branches. Merge schema changes with `--dry-run` preview.
+### Schema Operations
+Full schema inspection, table listing, and `git diff`-style schema diffs between any two branches. Merge schema changes with `--dry-run` preview.
 
-### 📊 Data Operations
+### Data Operations
 Run ad-hoc queries, export schemas and data to SQL, and seed branches from files.
 
-### 🔄 Git & CI Integration
+### Git & CI Integration
 Mirror Git branches to Neon, auto-provision ephemeral databases per PR, and clean up stale preview branches. Generate a GitHub Actions workflow with one command.
 
-### 🛠 Diagnostics & Management
+### Diagnostics & Management
 Validate configuration, manage compute endpoints, handle database roles, multi-project support, bulk prune, restore points, and an operation audit log.
 
 ---
@@ -132,11 +139,7 @@ db branch inspect <name>        Show branch details (--json)
 db branch search <pattern>      Find branches by name (--json)
 db branch protect <name>        Lock branches from deletion/rename
 db branch unprotect <name>      Remove branch protection
-```
-
-### Branch Tagging & Configuration
-```
-db branch tag <name> <label>    Label branches for organisation
+db branch tag <name> <label>    Label branches for organization
 db branch untag <name>          Remove a branch tag
 db branch set-default <name>    Set project default branch
 db branch set-expiration <name> <t>  Auto-delete after TTL
@@ -167,8 +170,8 @@ db endpoint inspect <id>        Show endpoint details
 
 ### Git & CI
 ```
-db git sync                     Mirror Git branches → Neon branches
-db git status                   Show Git ↔ Neon mapping
+db git sync                     Mirror Git branches -> Neon branches
+db git status                   Show Git <-> Neon mapping
 db ci preview <pr>              Ephemeral PR preview branch
 db ci cleanup                   Clean stale preview branches
 db ci setup                     Generate GitHub Actions workflow
@@ -219,13 +222,13 @@ npx @in3pire/db --help
 
 ## Configuration
 
-`db` resolves settings in this order: **CLI flag → env var → config file**.
+`db` resolves settings in this order: **CLI flag > env var > config file**.
 
 | Key | Env var | Default | Description |
 |---|---|---|---|
-| `NEON_API_KEY` | `NEON_API_KEY` | — | Your Neon API key |
-| `NEON_PROJECT_ID` | `NEON_PROJECT_ID` | — | Default project ID |
-| `default_branch` | — | `main` | Default parent branch |
+| `NEON_API_KEY` | `NEON_API_KEY` | -- | Your Neon API key |
+| `NEON_PROJECT_ID` | `NEON_PROJECT_ID` | -- | Default project ID |
+| `default_branch` | -- | `main` | Default parent branch |
 
 Set via `db auth login`, environment variables, or a `.env` file:
 
@@ -240,7 +243,7 @@ NEON_PROJECT_ID=your-project-id
 
 ### Database per Pull Request
 
-Spin up an isolated Postgres database for every pull request — automatically.
+Spin up an isolated Postgres database for every pull request -- automatically.
 
 ```bash
 db ci setup > .github/workflows/db-preview.yml
@@ -283,18 +286,29 @@ Branch naming rules: start with alphanumeric, use `a-z`, `A-Z`, `0-9`, `_`, `.`,
 
 ---
 
-## Support
+## Why Star This Repo
 
-If `db` makes your database workflows faster or your deployments safer, give it a star ⭐ — it signals that this project is worth maintaining and improving.
+**Because database branching should be as natural as Git branching.**
 
-Questions, ideas, or issues? [Open a discussion](https://github.com/IN3PIRE/db/discussions) or [file an issue](https://github.com/IN3PIRE/db/issues).
+If this tool saves you one debugging session, one corrupted dev database, or one "works on my machine" moment -- it was worth the star.
 
-<p align="center">
-  <a href="https://github.com/IN3PIRE/db/stargazers">
-    <img src="https://img.shields.io/github/stars/IN3PIRE/db?style=for-the-badge&color=6C47FF" alt="Star">
-  </a>
-</p>
+Your star tells other developers:
+- This project is actively maintained
+- It solves real problems
+- It's worth their time to try
+
+**One click. Huge impact.** ⭐
+
+<a href="https://github.com/IN3PIRE/db/stargazers">
+  <img src="https://img.shields.io/github/stars/IN3PIRE/db?style=for-the-badge&color=6C47FF" alt="Star this repo">
+</a>
 
 ---
+
+<p align="center">
+  <a href="https://github.com/IN3PIRE/db/stargazers">⭐ Star on GitHub</a> |
+  <a href="https://github.com/IN3PIRE/db/issues/new">🐛 Report a bug</a> |
+  <a href="https://github.com/IN3PIRE/db/discussions">💬 Join the discussion</a>
+</p>
 
 <p align="center"><sub>MIT License · Built with TypeScript · Powered by <a href="https://neon.tech">Neon</a></sub></p>

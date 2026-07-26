@@ -1,30 +1,34 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/db-数据库分支 CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=1a1a2e">
-    <img alt="db" src="https://img.shields.io/badge/db-数据库分支 CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=f0f0ff">
+    <source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/db-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E6%94%AF%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=1a1a2e">
+    <img alt="db — Neon Postgres Branching CLI" src="https://img.shields.io/badge/db-%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E6%94%AF%20CLI-6C47FF?style=for-the-badge&logo=postgresql&logoColor=white&labelColor=f0f0ff">
   </picture>
 </p>
 
 <p align="center">
   <b>Git-like branching for Neon Postgres.</b><br>
-  Create, diff, merge, and manage database branches from your terminal.<br>
   Every PR, every experiment, every feature — its own isolated database in seconds.
 </p>
 
 <p align="center">
   <a href="#quick-start">Quick Start</a> •
+  <a href="#why">Why</a> •
   <a href="#features">Features</a> •
+  <a href="#cli-reference">CLI Reference</a> •
   <a href="#installation">Install</a> •
+  <a href="#ci-cd">CI/CD</a> •
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
+<br>
+
 <p align="center">
-  <a href="LICENSE"><img src="https://shieldcn.dev/github/IN3PIRE/db/license.svg?variant=branded&size=xs&mode=light" alt="MIT"></a>
-  <a href="https://github.com/IN3PIRE/db/releases"><img src="https://shieldcn.dev/badge/release-v0.4.0-6C47FF.svg?variant=branded&size=xs&mode=light" alt="Release"></a>
-  <a href="https://github.com/IN3PIRE/db"><img src="https://shieldcn.dev/github/IN3PIRE/db/stars.svg?variant=branded&size=xs&mode=light" alt="Stars"></a>
-  <a href="#"><img src="https://shieldcn.dev/badge/TypeScript-5.7-3178C6.svg?variant=branded&size=xs&mode=light" alt="TypeScript"></a>
-  <a href="#"><img src="https://shieldcn.dev/badge/Node-18+-339933.svg?variant=branded&size=xs&mode=light" alt="Node"></a>
-  <a href="https://console.neon.tech"><img src="https://shieldcn.dev/badge/powered%20by-Neon-00E599.svg?variant=branded&size=xs&mode=light&logo=neon&logoColor=fff" alt="Neon"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-6C47FF?style=flat-square" alt="MIT"></a>
+  <a href="https://github.com/IN3PIRE/db/releases"><img src="https://img.shields.io/github/v/release/IN3PIRE/db?style=flat-square&color=6C47FF&label=release" alt="Release"></a>
+  <a href="https://github.com/IN3PIRE/db/stargazers"><img src="https://img.shields.io/github/stars/IN3PIRE/db?style=flat-square&color=6C47FF" alt="Stars"></a>
+  <a href="#"><img src="https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat-square" alt="TypeScript"></a>
+  <a href="#"><img src="https://img.shields.io/badge/Node-18%2B-339933?style=flat-square&logo=nodedotjs" alt="Node"></a>
+  <a href="https://console.neon.tech"><img src="https://img.shields.io/badge/powered_by-Neon-00E599?style=flat-square" alt="Neon"></a>
 </p>
 
 <br>
@@ -35,7 +39,7 @@ db branch create feat/payment-redesign
 db connect feat/payment-redesign
 # → postgresql://user@ep-cool-123.us-east-2.aws.neon.tech/neondb
 
-# Iterate safely. Diff before you merge.
+# Diff before you merge
 db branch diff feat/payment-redesign main
 # → + users (new table)
 # → ~ orders + payment_method (new column)
@@ -44,24 +48,6 @@ db branch diff feat/payment-redesign main
 db branch merge feat/payment-redesign main
 db branch delete feat/payment-redesign
 ```
-
----
-
-## What is this?
-
-**`db`** is a CLI that wraps the [Neon](https://neon.tech) Postgres branching API into a Git-like experience. It turns your database into a version-controllable resource — same mental model as `git branch`, but for schemas.
-
-No Docker. No `pg_dump` pipelines. No manual `CREATE DATABASE`. Just instant, isolated Postgres databases you can create, diff, merge, and destroy from your terminal.
-
-## Why?
-
-| Problem | How `db` fixes it |
-|---|---|
-| Sharing a single dev DB | Every dev gets their own branch. No stepping on each other. |
-| Schema changes without CI | Diff branches locally before merging. Catch issues early. |
-| Ephemeral test environments | Spin up a branch per PR. Auto-delete on merge. |
-| "Works on my machine" | Production-like data in every branch. Same schema, same seed data. |
-| Manual restore points | `db restore main pre-migration` — instant snapshot before risky operations. |
 
 ---
 
@@ -92,63 +78,119 @@ db branch delete feat/awesome
 
 ---
 
-## Key Features
+## Why
+
+| Problem | How `db` fixes it |
+|---|---|
+| Sharing a single dev DB | Every dev gets their own branch. No stepping on each other. |
+| Schema changes without CI | Diff branches locally before merging. Catch issues early. |
+| Ephemeral test environments | Spin up a branch per PR. Auto-delete on merge. |
+| "Works on my machine" | Production-like data in every branch. Same schema, same seed data. |
+| Manual restore points | `db restore main pre-migration` — instant snapshot before risky operations. |
+
+---
+
+## Features
+
+### 🪵 Branch Management
+Create, list, rename, delete, search, and inspect branches — just like Git.
+
+### 🔒 Safety & Organisation
+Protect critical branches, tag them for organisation, set auto-expiration, and control defaults.
+
+### 🧬 Schema Operations
+Full schema inspection (`db branch schema`), table listing (`db branch tables`), and `git diff`-style schema diffs between any two branches. Merge schema changes with `--dry-run` preview.
+
+### 📊 Data Operations
+Run ad-hoc queries, export schemas and data to SQL, and seed branches from files.
+
+### 🔄 Git & CI Integration
+Mirror Git branches to Neon, auto-provision ephemeral databases per PR, and clean up stale preview branches. Generate a GitHub Actions workflow with one command.
+
+### 🛠 Diagnostics & Management
+Validate configuration, manage compute endpoints, handle database roles, multi-project support, bulk prune, restore points, and an operation audit log.
+
+---
+
+## CLI Reference
+
+### Auth
+```
+db auth login [api-key]         Authenticate with Neon API key
+db auth status                  Show authentication status
+db auth logout                  Remove stored credentials
+db auth set-project <id>        Set default Neon project ID
+```
 
 ### Branch Management
 ```
-db branch create <name>              Create a branch
-db branch list                       List all branches (--json, --tags)
-db branch delete <name>              Delete a branch
-db branch rename <old> <new>         Rename a branch
-db branch search <pattern>           Find branches by name
-db branch inspect <name>             Show branch details
+db branch list                  List all branches (--json, --tags)
+db branch create <name>         Create a branch (--from, --latest)
+db branch delete <name>         Delete a branch (--force)
+db branch rename <old> <new>    Rename a branch
+db branch inspect <name>        Show branch details (--json)
+db branch search <pattern>      Find branches by name (--json)
+db branch protect <name>        Lock branches from deletion/rename
+db branch unprotect <name>      Remove branch protection
 ```
 
-### Safety & Organisation
+### Branch Tagging & Configuration
 ```
-db branch protect <name>             Lock branches from deletion/rename
-db branch tag <name> <label>         Label branches for organisation
-db branch set-default <name>         Set project default branch
+db branch tag <name> <label>    Label branches for organisation
+db branch untag <name>          Remove a branch tag
+db branch set-default <name>    Set project default branch
 db branch set-expiration <name> <t>  Auto-delete after TTL
 ```
 
-### Schema Operations
+### Schema
 ```
-db branch diff <a> [b]               Schema diff between branches
-db branch schema <name>              Full schema view (tables, columns, indexes)
-db branch tables <name>              List tables
-db branch merge <source> <target>    Merge schema changes (--dry-run)
-```
-
-### Data Operations
-```
-db query <branch> <sql>              Run SQL (--json, --limit)
-db export <branch> -o file.sql       Export schema/data to SQL
-db seed <branch> <file>              Seed from SQL file
+db branch diff <a> [b]          Schema diff between branches
+db branch schema <name>         Full schema view (--json, --schema)
+db branch tables <name>         List tables (--schema)
+db branch merge <a> <b>         Merge schema changes (--dry-run)
 ```
 
-### Git & CI Integration
+### Data
 ```
-db git sync                          Mirror Git branches → Neon branches
-db git status                        Show Git ↔ Neon mapping
-db ci preview <pr>                   Ephemeral PR preview branch
-db ci cleanup                        Clean stale preview branches
-db ci setup                          Generate GitHub Actions workflow
+db query <branch> <sql>         Run SQL (--json, --limit)
+db export <branch> -o file.sql  Export schema/data to SQL
+db seed <branch> <file>         Seed from SQL file
 ```
 
-### Diagnostics & Management
+### Endpoints
 ```
-db doctor                            Validate config, API, connectivity
-db endpoint list/create/delete        Manage compute endpoints
-db role list <branch>                List database roles
-db project list/switch/current       Multi-project support
-db prune                             Bulk delete stale branches
-db restore <branch> [name]           Create restore points
-db reset <branch> --to <target>      Reset branch to match another
-db log show                          Operation history
-db watch                             Real-time branch monitor
-db completion bash/zsh               Shell completions
-db config get/set/list               Manage configuration
+db endpoint list                List endpoints (--json)
+db endpoint create <branch-id>  Create a compute endpoint (--read-only)
+db endpoint delete <id>         Delete an endpoint (--force)
+db endpoint inspect <id>        Show endpoint details
+```
+
+### Git & CI
+```
+db git sync                     Mirror Git branches → Neon branches
+db git status                   Show Git ↔ Neon mapping
+db ci preview <pr>              Ephemeral PR preview branch
+db ci cleanup                   Clean stale preview branches
+db ci setup                     Generate GitHub Actions workflow
+```
+
+### Diagnostics & Utilities
+```
+db doctor                       Validate config, API, connectivity
+db role list <branch>           List database roles
+db project list                 List projects
+db project switch <id>          Switch active project
+db prune                        Bulk delete stale branches
+db restore <branch> [name]      Create restore points
+db reset <branch> --to <target> Reset branch to match another
+db shell [branch]               Open psql for a branch
+db log show                     View operation history (--json, -n)
+db log clear                    Clear operation history
+db watch                        Real-time branch monitor
+db completion bash/zsh          Generate shell completions
+db config list                  Show configuration (--json)
+db config get <key>             Get a specific config value
+db config set <key> <value>     Set a config value
 ```
 
 ---
@@ -170,7 +212,7 @@ echo "//npm.pkg.github.com/:_authToken=YOUR_GITHUB_TOKEN" >> ~/.npmrc
 npm install -g @in3pire/db
 
 # Or run directly without installing:
-npx https://github.com/IN3PIRE/db/releases/download/v0.4.0/in3pire-db-0.4.0.tgz --help
+npx @in3pire/db --help
 ```
 
 ---
@@ -194,7 +236,9 @@ NEON_PROJECT_ID=your-project-id
 
 ---
 
-## CI/CD: Database per PR
+## CI/CD
+
+### Database per Pull Request
 
 Spin up an isolated Postgres database for every pull request — automatically.
 
@@ -209,6 +253,18 @@ This generates a workflow that:
 4. Cleans up when the PR is merged
 
 Add `NEON_API_KEY` and `NEON_PROJECT_ID` to your repo secrets, and you're done.
+
+### Cleanup
+
+Keep your Neon project tidy by removing stale preview branches:
+
+```bash
+# Delete pr-* branches older than 14 days
+db ci cleanup --days 14
+
+# Preview what would be deleted
+db ci cleanup --dry-run
+```
 
 ---
 
@@ -227,7 +283,7 @@ Branch naming rules: start with alphanumeric, use `a-z`, `A-Z`, `0-9`, `_`, `.`,
 
 ---
 
-## Support the Project
+## Support
 
 If `db` makes your database workflows faster or your deployments safer, give it a star ⭐ — it signals that this project is worth maintaining and improving.
 
@@ -235,7 +291,7 @@ Questions, ideas, or issues? [Open a discussion](https://github.com/IN3PIRE/db/d
 
 <p align="center">
   <a href="https://github.com/IN3PIRE/db/stargazers">
-    <img src="https://shieldcn.dev/github/IN3PIRE/db/stars.svg?variant=branded&size=sm&mode=light" alt="Star">
+    <img src="https://img.shields.io/github/stars/IN3PIRE/db?style=for-the-badge&color=6C47FF" alt="Star">
   </a>
 </p>
 

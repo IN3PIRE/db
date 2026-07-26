@@ -10,6 +10,11 @@ export function registerConfigCmd(program: Command) {
   cfg
     .command("list")
     .description("Show all configuration values")
+    .addHelpText("after", `
+Examples:
+   db config list
+   db config list --json
+  `)
     .option("--json", "Output as JSON")
     .action((options) => {
       const c = getConfig();
@@ -31,6 +36,11 @@ export function registerConfigCmd(program: Command) {
   cfg
     .command("get")
     .description("Get a specific config value")
+    .addHelpText("after", `
+Examples:
+   db config get NEON_API_KEY
+   db config get default_branch
+  `)
     .argument("<key>", "Config key (NEON_API_KEY, NEON_PROJECT_ID, default_branch)")
     .action((key) => {
       const c = getConfig();
@@ -45,6 +55,11 @@ export function registerConfigCmd(program: Command) {
   cfg
     .command("set")
     .description("Set a config value")
+    .addHelpText("after", `
+Examples:
+   db config set NEON_PROJECT_ID proj_abc123
+   db config set default_branch main
+  `)
     .argument("<key>", "Config key")
     .argument("<value>", "Config value")
     .action((key, value) => {

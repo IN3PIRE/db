@@ -12,6 +12,12 @@ export function registerLogCmd(program: Command) {
     .command("show")
     .aliases(["list", "ls"])
     .description("Show recent branch operations")
+    .addHelpText("after", `
+Examples:
+   db log show
+   db log show --json
+   db log show -n 10
+  `)
     .option("--json", "Output as JSON")
     .option("-n, --number <n>", "Number of entries to show", "50")
     .action((options) => {
@@ -66,6 +72,10 @@ export function registerLogCmd(program: Command) {
   log
     .command("clear")
     .description("Clear the local operation history")
+    .addHelpText("after", `
+Examples:
+   db log clear
+  `)
     .action(() => {
       clearHistory();
       console.log(chalk.green("✓ History cleared."));

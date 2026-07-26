@@ -9,6 +9,12 @@ export function registerCiCmd(program: Command) {
   // -- preview ----------------------------------------------------------------
   ci.command("preview")
     .description("Create an ephemeral branch for a PR")
+    .addHelpText("after", `
+Examples:
+   db ci preview 42
+   db ci preview 42 --from staging
+   db ci preview 42 --project proj_abc123
+  `)
     .argument("<pr-number>", "Pull request number")
     .option("-p, --project <id>", "Project ID")
     .option("-f, --from <branch>", "Parent branch (default: main)")
@@ -60,6 +66,12 @@ export function registerCiCmd(program: Command) {
   // -- cleanup ----------------------------------------------------------------
   ci.command("cleanup")
     .description("Delete stale preview branches")
+    .addHelpText("after", `
+Examples:
+   db ci cleanup
+   db ci cleanup --days 14
+   db ci cleanup --dry-run
+  `)
     .option("-p, --project <id>", "Project ID")
     .option("-d, --days <days>", "Delete branches older than N days", "7")
     .option("--dry-run", "Show what would be deleted without deleting")
@@ -124,6 +136,10 @@ export function registerCiCmd(program: Command) {
   // -- setup ------------------------------------------------------------------
   ci.command("setup")
     .description("Generate a GitHub Actions workflow for DB previews")
+    .addHelpText("after", `
+Examples:
+   db ci setup
+  `)
     .action(() => {
       const workflow = `name: Database Preview
 on:

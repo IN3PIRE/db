@@ -14,6 +14,12 @@ export function registerEndpointCmd(program: Command) {
   endpoint
     .command("list")
     .description("List all endpoints in a project")
+    .addHelpText("after", `
+Examples:
+   db endpoint list
+   db endpoint list --json
+   db endpoint list --project proj_abc123
+  `)
     .option("-p, --project <id>", "Project ID")
     .option("--json", "Output in JSON format")
     .action(async (options) => {
@@ -62,6 +68,11 @@ export function registerEndpointCmd(program: Command) {
   endpoint
     .command("create")
     .description("Create a compute endpoint for a branch")
+    .addHelpText("after", `
+Examples:
+   db endpoint create br_abc123
+   db endpoint create br_abc123 --read-only
+  `)
     .argument("<branch-id>", "Branch ID to attach the endpoint to")
     .option("-p, --project <id>", "Project ID")
     .option("--read-only", "Create a read-only endpoint instead of read-write")
@@ -101,6 +112,11 @@ export function registerEndpointCmd(program: Command) {
     .command("delete")
     .alias("rm")
     .description("Delete a compute endpoint")
+    .addHelpText("after", `
+Examples:
+   db endpoint delete ep_abc123
+   db endpoint rm ep_abc123 --force
+  `)
     .argument("<endpoint-id>", "Endpoint ID")
     .option("-p, --project <id>", "Project ID")
     .option("-f, --force", "Skip confirmation")
@@ -142,6 +158,10 @@ export function registerEndpointCmd(program: Command) {
   endpoint
     .command("inspect")
     .description("Show endpoint details")
+    .addHelpText("after", `
+Examples:
+   db endpoint inspect ep_abc123
+  `)
     .argument("<endpoint-id>", "Endpoint ID")
     .option("-p, --project <id>", "Project ID")
     .action(async (endpointId, options) => {

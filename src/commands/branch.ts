@@ -401,6 +401,10 @@ Examples:
   branch
     .command("unprotect")
     .description("Remove protection from a branch")
+    .addHelpText("after", `
+Examples:
+   db branch unprotect main
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .option("-p, --project <id>", "Project ID")
     .action(async (identifier, options) => {
@@ -420,6 +424,11 @@ Examples:
   branch
     .command("tag")
     .description("Tag a branch with a label for easier identification")
+    .addHelpText("after", `
+Examples:
+   db branch tag feat/awesome milestone-1
+   db branch tag main production
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .argument("<tag>", "Tag label")
     .option("-p, --project <id>", "Project ID")
@@ -440,6 +449,10 @@ Examples:
   branch
     .command("untag")
     .description("Remove a tag from a branch")
+    .addHelpText("after", `
+Examples:
+   db branch untag feat/awesome
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .option("-p, --project <id>", "Project ID")
     .action(async (identifier, options) => {
@@ -459,6 +472,11 @@ Examples:
   branch
     .command("tables")
     .description("List all tables in a branch")
+    .addHelpText("after", `
+Examples:
+   db branch tables main
+   db branch tables feat/awesome --schema custom
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .option("-p, --project <id>", "Project ID")
     .option("--schema <schema>", "Database schema (default: public)")
@@ -503,6 +521,10 @@ Examples:
   branch
     .command("set-default")
     .description("Set a branch as the project default")
+    .addHelpText("after", `
+Examples:
+   db branch set-default main
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .option("-p, --project <id>", "Project ID")
     .action(async (identifier, options) => {
@@ -526,6 +548,11 @@ Examples:
   branch
     .command("set-expiration")
     .description("Set auto-deletion TTL on a branch (ISO date or 'never')")
+    .addHelpText("after", `
+Examples:
+   db branch set-expiration feat/awesome 2026-08-01T00:00:00Z
+   db branch set-expiration feat/awesome never
+  `)
     .argument("<name-or-id>", "Branch name or ID")
     .argument("<expires-at>", 'Expiration ISO date (e.g. 2026-08-01T00:00:00Z) or "never" to clear')
     .option("-p, --project <id>", "Project ID")

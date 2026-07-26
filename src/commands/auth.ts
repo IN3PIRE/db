@@ -8,6 +8,11 @@ export function registerAuthCmd(program: Command) {
   auth
     .command("login")
     .description("Authenticate with your Neon API key")
+    .addHelpText("after", `
+Examples:
+   db auth login
+   db auth login nq_abc123def456
+  `)
     .argument("[api-key]", "Your Neon API key (will prompt if not provided)")
     .action(async (apiKey?: string) => {
       if (apiKey) {
@@ -46,6 +51,10 @@ export function registerAuthCmd(program: Command) {
   auth
     .command("status")
     .description("Show authentication status")
+    .addHelpText("after", `
+Examples:
+   db auth status
+  `)
     .action(() => {
       const cfg = getConfig();
       const key = cfg.NEON_API_KEY || process.env.NEON_API_KEY;
@@ -76,6 +85,10 @@ export function registerAuthCmd(program: Command) {
   auth
     .command("logout")
     .description("Remove stored credentials")
+    .addHelpText("after", `
+Examples:
+   db auth logout
+  `)
     .action(() => {
       clearConfig();
       console.log(chalk.green("✓ Credentials cleared."));
@@ -84,6 +97,10 @@ export function registerAuthCmd(program: Command) {
   auth
     .command("set-project")
     .description("Set the default Neon project ID")
+    .addHelpText("after", `
+Examples:
+   db auth set-project proj_abc123
+  `)
     .argument("<project-id>", "Your Neon project ID")
     .action((projectId: string) => {
       setConfig("NEON_PROJECT_ID", projectId);

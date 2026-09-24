@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.11.0] - 2026-09-24
+### Added
+- Added command examples across the CLI help output for authentication, branch management, CI, configuration, endpoints, and operation logs.
+### Changed
+- Bumped `@in3pire/db` to 0.11.0.
+
+
 ## [0.7.0] - 2026-07-20
 ### Added
 - **`db shell [branch]`** — Open an interactive psql shell connected to any branch. Supports `--pooled` for pooled connections and `--project` for multi-project setups. Falls back to the default branch when no branch is specified.
@@ -128,7 +135,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `db auth status` — show current auth status
 - Persistent configuration via `conf`, stored at `~/.config/in3pire-db/config.json` and validated with Zod (`NEON_API_KEY`, `NEON_PROJECT_ID`, `default_branch`), with `.env` support via `dotenv`
 
-[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.7.0...main
+[Unreleased]: https://github.com/IN3PIRE/db/compare/v0.11.0...main
+[0.11.0]: https://github.com/IN3PIRE/db/compare/v0.10.0...v0.11.0
 [0.7.0]: https://github.com/IN3PIRE/db/compare/v0.6.0...v0.7.0
 [0.6.0]: https://github.com/IN3PIRE/db/compare/v0.5.0...v0.6.0
 [0.5.0]: https://github.com/IN3PIRE/db/compare/v0.4.0...v0.5.0
